@@ -14,7 +14,7 @@ class Small(nn.Module):
         super.__init__()
         self.conv1 = nn.Conv2d(3, 64, 5)
         self.conv2 = nn.Conv2d(3, 64, 5)
-        self.maxpool = nn.MaxPool2d(2)
+        self.maxpool = nn.MaxPool2d(2,2)
         self.linear = nn.Linear(128,num_class)
         self.dropout = nn.Dropout(0.5)
         self.activation = activation

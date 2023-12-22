@@ -1,2 +1,4 @@
 dataset/data/
 dataset/img/
+dataset/__pycache__/
+__pycache__/
