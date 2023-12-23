@@ -1,4 +1,4 @@
-dataset/data/
-dataset/img/
-dataset/__pycache__/
+datasets/data/
+datasets/img/
+datasets/__pycache__/
 __pycache__/
