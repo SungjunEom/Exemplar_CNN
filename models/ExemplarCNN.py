@@ -11,7 +11,7 @@ class Small(nn.Module):
     This last layer is succeeded by a softmax layer, which serves as the network output. 
     '''
     def __init__(self, activation=nn.Sigmoid(), num_class=50):
-        super.__init__()
+        super().__init__()
         self.conv1 = nn.Conv2d(3, 64, 5)
         self.conv2 = nn.Conv2d(3, 64, 5)
         self.maxpool = nn.MaxPool2d(2,2)

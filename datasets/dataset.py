@@ -1,11 +1,14 @@
-from stl_preprocessing import *
+from .stl_preprocessing import *
+from configs.train_config import *
 from torch.utils.data import Dataset
-from torchvision.transforms import v2
+from torchvision import transforms
 import torch
+import numpy as np
 
 
 class TrainDataset(Dataset):
     def __init__(self, k=150, n=8000, data_path='./data/stl10_binary/unlabeled_X.bin'):
+        self.config = TrainConfigs().parse()
         self.data_path = data_path
         self.all_images = read_all_images(self.data_path)
         self.img_w = self.all_images.shape[-1]
@@ -13,26 +16,23 @@ class TrainDataset(Dataset):
         self.k = k
         self.n = n
 
+        self.labels = [i for i in range(0, n)]
+        np.random.shuffle(self.all_images)
+        self.all_images = self.all_images[:n]
+
+        self.transform = transforms.Compose([
+            transforms.v2.ColorJitter(),
+            transforms.v2.RandomRotation(20),
+            transforms.v2.RandomResize(self.img_w * 0.7, self.img_w * 1.4),
+            transforms.v2.RandomCrop((32,32))
+        ])
+
+
     def __len__(self):
-        return self.all_images.shape[0]
+        return self.n
 
     def __getitem__(self, idx):
-        img = torch.tensor(self.all_images[idx])
-        imgs = [self.transform(img) for _ in range(self.k)]
-        return imgs
-
-    def transform(self, img):
-        adjust_color = v2.ColorJitter()
-        rotate = v2.RandomRotation(20)
-        resize = v2.RandomResize(self.img_w * 0.7, self.img_w * 1.4)
-        crop = v2.RandomCrop((32,32))
-
-        colored = adjust_color(img)
-        rotated = rotate(colored)
-        resized = resize(rotated)
-        img = crop(resized)
-
-        return img
+        return self.all_images[idx], self.labels[idx]
         
     
 class TestDataset(Dataset):
