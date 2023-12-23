@@ -29,11 +29,15 @@ def main():
     for epoch in range(epochs):
         print('Epoch:', epoch)
         model.train()
-        for X in tqdm(train_dataloader):
+        for X, y in tqdm(train_dataloader):
             optimizer.zero_grad()
             X = X.to(device)
-            print(X.shape)
+            y = y.to(device)
             pred = model(X)
+            loss = loss_fn(pred, y)
+            loss.backward()
+            optimizer.step()
+
 
 
 

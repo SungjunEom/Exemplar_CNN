@@ -2,6 +2,7 @@ from .stl_preprocessing import *
 from configs.train_config import *
 from torch.utils.data import Dataset
 from torchvision import transforms
+from torchvision.transforms import v2
 import torch
 import numpy as np
 
@@ -20,19 +21,34 @@ class TrainDataset(Dataset):
         np.random.shuffle(self.all_images)
         self.all_images = self.all_images[:n]
 
-        self.transform = transforms.Compose([
-            transforms.v2.ColorJitter(),
-            transforms.v2.RandomRotation(20),
-            transforms.v2.RandomResize(self.img_w * 0.7, self.img_w * 1.4),
-            transforms.v2.RandomCrop((32,32))
-        ])
+        # self.transform = transforms.Compose([
+        #     v2.ColorJitter(),
+        #     v2.RandomRotation(20),
+        #     v2.RandomResize(int(self.img_w * 0.7), int(self.img_w * 1.4)),
+        #     v2.RandomCrop((32,32))
+        # ])
 
 
     def __len__(self):
-        return self.n
+        return self.n * self.k
 
     def __getitem__(self, idx):
-        return self.all_images[idx], self.labels[idx]
+        instance = idx // self.k
+        image = self.transform(self.all_images[instance])
+        return image, self.labels[instance]
+
+    def transform(self, img):
+        adjust_color = v2.ColorJitter()
+        rotate = v2.RandomRotation(20)
+        resize = v2.RandomResize(int(self.img_w * 0.7), int(self.img_w * 1.4))
+        crop = v2.RandomCrop(size=(32,32))
+
+        colored = adjust_color(img)
+        rotated = rotate(colored)
+        resized = resize(rotated)
+        img = crop(resized)
+
+        return img
         
     
 class TestDataset(Dataset):
