@@ -21,12 +21,12 @@ class TrainDataset(Dataset):
         np.random.shuffle(self.all_images)
         self.all_images = self.all_images[:n]
 
-        # self.transform = transforms.Compose([
-        #     v2.ColorJitter(),
-        #     v2.RandomRotation(20),
-        #     v2.RandomResize(int(self.img_w * 0.7), int(self.img_w * 1.4)),
-        #     v2.RandomCrop((32,32))
-        # ])
+        self.transform = transforms.Compose([
+            v2.ColorJitter(),
+            v2.RandomRotation(20),
+            v2.RandomResize(int(self.img_w * 0.7), int(self.img_w * 1.4)),
+            v2.RandomCrop((32,32))
+        ])
 
 
     def __len__(self):
@@ -34,21 +34,8 @@ class TrainDataset(Dataset):
 
     def __getitem__(self, idx):
         instance = idx // self.k
-        image = self.transform(self.all_images[instance])
+        image = self.transform(torch.Tensor(self.all_images[instance]))
         return image, self.labels[instance]
-
-    def transform(self, img):
-        adjust_color = v2.ColorJitter()
-        rotate = v2.RandomRotation(20)
-        resize = v2.RandomResize(int(self.img_w * 0.7), int(self.img_w * 1.4))
-        crop = v2.RandomCrop(size=(32,32))
-
-        colored = adjust_color(img)
-        rotated = rotate(colored)
-        resized = resize(rotated)
-        img = crop(resized)
-
-        return img
         
     
 class TestDataset(Dataset):
