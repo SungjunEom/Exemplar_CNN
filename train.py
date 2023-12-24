@@ -4,13 +4,28 @@ from configs.train_config import TrainConfigs
 import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm
+import wandb
 
+
+configs = TrainConfigs().parse()
+
+wandb.init(
+    # set the wandb project where this run will be logged
+    project="First run",
+    
+    # track hyperparameters and run metadata
+    config={
+    "learning_rate": configs.lr,
+    "architecture": "Small",
+    "dataset": "STL-10",
+    "epochs": configs.epochs,
+    }
+)
 
 def main():
     '''
     Trains a new model
     '''
-    configs = TrainConfigs().parse()
     assert torch.cuda.is_available(), 'No GPU detected'
     torch.manual_seed(configs.seed)
     # torch.cuda.set_device(configs.device)
@@ -19,10 +34,11 @@ def main():
     lr = configs.lr
     loss_fn = configs.loss_fn.to(device)
     epochs = configs.epochs
+    batch_size = configs.batch_size
     
     model = Small(num_class=configs.class_num).to(device)
     train_dataset = TrainDataset(data_path=data_path)
-    train_dataloader = DataLoader(train_dataset, batch_size=64, shuffle=True)
+    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=16)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     # scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.99)
 
@@ -37,6 +53,8 @@ def main():
             loss = loss_fn(pred, y)
             loss.backward()
             optimizer.step()
+
+            wandb.log({"loss": loss})
 
 
 
