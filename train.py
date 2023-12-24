@@ -8,19 +8,21 @@ import wandb
 
 
 configs = TrainConfigs().parse()
+isWandb = configs.wandb
 
-wandb.init(
-    # set the wandb project where this run will be logged
-    project="First run",
-    
-    # track hyperparameters and run metadata
-    config={
-    "learning_rate": configs.lr,
-    "architecture": "Small",
-    "dataset": "STL-10",
-    "epochs": configs.epochs,
-    }
-)
+if isWandb:
+    wandb.init(
+        # set the wandb project where this run will be logged
+        project="First run",
+        
+        # track hyperparameters and run metadata
+        config={
+        "learning_rate": configs.lr,
+        "architecture": "Small",
+        "dataset": "STL-10",
+        "epochs": configs.epochs,
+        }
+    )
 
 def main():
     '''
@@ -54,7 +56,8 @@ def main():
             loss.backward()
             optimizer.step()
 
-            wandb.log({"loss": loss})
+            if isWandb:
+                wandb.log({"loss": loss})
 
 
 

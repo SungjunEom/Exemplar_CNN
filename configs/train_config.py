@@ -12,6 +12,7 @@ class TrainConfigs(DefaultConfigs):
         self.parser.add_argument('--dataset_path', type=str, default='./datasets/data/stl10_binary/unlabeled_X.bin', help='Path of target data')
         self.parser.add_argument('--class_num', type=int, default=8000, help='The number of surrogate classes')
         self.parser.add_argument('--lr', type=float, default=0.001, help='Learning rate')
+        self.parser.add_argument('--wandb', type=bool, default=False, help='wandb.ai')
 
     def parse(self):
         self.conf = self.parser.parse_args()

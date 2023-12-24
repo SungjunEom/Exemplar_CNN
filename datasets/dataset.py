@@ -7,6 +7,9 @@ import torch
 import numpy as np
 
 
+config = TrainConfigs().parse()
+device = config.device
+
 class TrainDataset(Dataset):
     def __init__(self, k=150, n=8000, data_path='./data/stl10_binary/unlabeled_X.bin'):
         self.config = TrainConfigs().parse()
@@ -21,12 +24,21 @@ class TrainDataset(Dataset):
         np.random.shuffle(self.all_images)
         self.all_images = self.all_images[:n]
 
-        self.transform = transforms.Compose([
+        #CPU
+        # self.transform = transforms.Compose([
+        #     v2.ColorJitter(),
+        #     v2.RandomRotation(20),
+        #     v2.RandomResize(int(self.img_w * 0.7), int(self.img_w * 1.4)),
+        #     v2.RandomCrop((32,32))
+        # ])
+
+        #GPU
+        self.transform = torch.nn.Sequential(
             v2.ColorJitter(),
             v2.RandomRotation(20),
             v2.RandomResize(int(self.img_w * 0.7), int(self.img_w * 1.4)),
             v2.RandomCrop((32,32))
-        ])
+        ).to(device)
 
 
     def __len__(self):
