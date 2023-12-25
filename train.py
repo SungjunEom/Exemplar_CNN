@@ -40,7 +40,7 @@ def main():
     
     model = Small(num_class=configs.class_num).to(device)
     train_dataset = TrainDataset(data_path=data_path)
-    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=16)
+    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
     optimizer = torch.optim.Adam(model.parameters(), lr=lr)
     # scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.99)
 

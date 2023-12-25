@@ -1,7 +1,6 @@
 from .stl_preprocessing import *
 from configs.train_config import *
 from torch.utils.data import Dataset
-from torchvision import transforms
 from torchvision.transforms import v2
 import torch
 import numpy as np
@@ -23,6 +22,7 @@ class TrainDataset(Dataset):
         self.labels = [i for i in range(0, n)]
         np.random.shuffle(self.all_images)
         self.all_images = self.all_images[:n]
+        self.all_images = torch.Tensor(self.all_images).to(device)
 
         #CPU
         # self.transform = transforms.Compose([
@@ -46,7 +46,7 @@ class TrainDataset(Dataset):
 
     def __getitem__(self, idx):
         instance = idx // self.k
-        image = self.transform(torch.Tensor(self.all_images[instance]))
+        image = self.transform(self.all_images[instance])
         return image, self.labels[instance]
         
     
